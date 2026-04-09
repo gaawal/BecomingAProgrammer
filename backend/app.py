@@ -7,7 +7,7 @@ from typing import Dict, List
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", static_url_path="")
 CORS(app)
 
 DATA_LOCK = Lock()
@@ -75,12 +75,7 @@ REWARDS: List[dict] = [
 
 POINT_LOGS: List[dict] = []
 
-LEVEL_THRESHOLDS = {
-    1: 0,
-    2: 200,
-    3: 500,
-    4: 900,
-}
+LEVEL_THRESHOLDS = {1: 0, 2: 200, 3: 500, 4: 900}
 
 
 def calc_task_points(task: dict, efficiency: float = 1.0) -> int:
@@ -93,6 +88,11 @@ def derive_level(points: int) -> int:
         if points >= threshold:
             lv = level
     return lv
+
+
+@app.get("/")
+def index():
+    return app.send_static_file("index.html")
 
 
 @app.get("/api/health")
